@@ -1,0 +1,89 @@
+VERIFICATION REPORT - All Categories Present in Main Branch
+============================================================
+
+File: copy_unshakable-tools.html
+Branch: main
+Latest Commit: e53ec7d (merged 2025-10-21 09:57:30)
+
+CATEGORY COUNT:
+===============
+General Interior: 12 items
+General Exterior: 12 items
+Major Systems & Utilities: 11 items
+Kitchen Remodel: 15 items
+Bathroom Remodel: 12 items
+
+TOTAL: 5 categories, 62 items
+
+SAMPLE ITEMS FROM EACH CATEGORY:
+=================================
+
+General Interior:
+  - Interior Painting (Walls & Trim)
+  - Flooring Installation (LVP)
+  - Carpet Installation
+  ... (9 more items)
+
+General Exterior:
+  - Exterior Painting
+  - Landscaping Cleanup & Mulching
+  - Entry Door Replacement (Steel)
+  ... (9 more items)
+
+Major Systems & Utilities:
+  - HVAC System Replacement
+  - Water Heater Replacement
+  - Roof Replacement (Asphalt)
+  - Electrical Panel Upgrade
+  - Foundation Repair (Piers)
+  ... (6 more items)
+
+Kitchen Remodel:
+  - Demolition (Cosmetic)
+  - Demolition to Studs
+  - Structural & Framing (Layout Change)
+  - Full MEP Overhaul (New Wiring & Plumbing)
+  - Insulation & Drywall Installation
+  - Cabinet Painting
+  - New Cabinets (Low-Grade)
+  - New Cabinets (Mid-Grade)
+  - Countertops (Entry-Level Quartz)
+  - Countertops (Mid-Grade Quartz)
+  - Appliance Package (3-Piece Stainless)
+  ... (4 more items)
+
+Bathroom Remodel:
+  - Demolition (Cosmetic)
+  - Demolition to Studs
+  - Structural & Framing (Layout Change)
+  - Full MEP Overhaul (New Wiring & Plumbing)
+  - Insulation & Drywall Installation
+  - Bathtub/Shower Reglazing
+  - Tub/Shower Combo Replacement
+  - Tile Installation (Floor & Walls)
+  - Bathroom Vanity & Top Replacement
+  - Toilet Replacement
+  - Fixtures, Mirror & Lighting
+  - MEP Updates (GFCI, valves, etc.)
+
+FILE HASH (to verify you have correct file):
+=============================================
+MD5: 77c3319b4a52f144ffa4fcb98e6730fa
+
+If your downloaded file has a different hash, you have an old version.
+
+To check your file hash:
+- Windows: certutil -hashfile copy_unshakable-tools.html MD5
+- Mac/Linux: md5sum copy_unshakable-tools.html
+
+DOWNLOAD INSTRUCTIONS:
+======================
+1. Go to: https://github.com/nickloveinvesting/duplicate-test-unshakable
+2. Ensure you're on the "main" branch
+3. Press Ctrl+Shift+R (or Cmd+Shift+R) to hard refresh
+4. Click copy_unshakable-tools.html
+5. Click "Raw" button
+6. Right-click → Save As (don't copy/paste!)
+
+Direct Raw Link:
+https://raw.githubusercontent.com/nickloveinvesting/duplicate-test-unshakable/main/copy_unshakable-tools.html
