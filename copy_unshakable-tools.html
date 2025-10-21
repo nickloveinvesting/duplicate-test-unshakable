@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unshakable Fix & Flip Deal Analyzer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Base styling adhering to the brand guide */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121212; /* Charcoal */
+            color: #FFFFFF;
+        }
+
+        /* Custom styles for branded sliders */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #4A5568; /* Slate gray for track */
+            border-radius: 5px;
+            outline: none;
+            opacity: 0.9;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        input[type="range"]:hover {
+            opacity: 1;
+        }
+
+        /* Thumb (the slider handle) styling */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background-image: linear-gradient(to right, #C84A00, #FF6A00); /* Fire Gradient */
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid #FFFFFF;
+            margin-top: -8px; /* Center thumb on the track */
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background-image: linear-gradient(to right, #C84A00, #FF6A00); /* Fire Gradient */
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid #FFFFFF;
+        }
+
+        /* Custom styles for inputs */
+        input[type="number"], input[type="email"], input[type="text"], textarea {
+            background-color: #2D3748; /* Darker slate */
+            color: #FFFFFF;
+            border: 1px solid #4A5568;
+            -moz-appearance: textfield; /* Firefox */
+        }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Gradient text for key metrics */
+        .gradient-text {
+            background-image: linear-gradient(to right, #F2C14E, #FFC94E); /* Gold Gradient */
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Sensitivity Table Styling */
+        #profit_table_container {
+            overflow-x: auto;
+        }
+        #profit_table th, #profit_table td {
+            white-space: nowrap;
+            padding: 0.6rem 0.85rem;
+            text-align: center;
+        }
+        #profit_table th {
+            background-color: #1a202c;
+        }
+        #profit_table td.in-range {
+            background-color: rgba(16, 185, 129, 0.1);
+        }
+        #profit_table td.current-deal {
+            background-image: linear-gradient(to right, #c84a00, #ff6a00) !important;
+            color: #FFFFFF;
+            font-weight: bold;
+            outline: 2px solid #FFC94E;
+        }
+        .prose-custom ul {
+            list-style-position: inside;
+            padding-left: 0;
+        }
+        .prose-custom ul > li::marker {
+            color: #FFC94E;
+        }
+        
+        /* Styles from Rehab Estimator */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #2d3748;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4a5568;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #718096;
+        }
+        input[type="number"]:disabled, button:disabled {
+            background-color: #2d3748;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        /* Style for active nav button */
+        .nav-button.active {
+             background-image: linear-gradient(to right, #C84A00, #FF6A00);
+             color: #FFFFFF;
+        }
+
+        .nav-button:focus-visible {
+            outline: 2px solid #FFC94E;
+            outline-offset: 2px;
+        }
+
+        .nav-button .nav-chevron {
+            transition: transform 0.2s ease, opacity 0.2s ease;
+            opacity: 0.6;
+        }
+
+        .nav-button.active .nav-chevron {
+            opacity: 0.95;
+            transform: translateX(2px);
+        }
+
+        @media (max-width: 639px) {
+            .nav-button {
+                border-radius: 0.75rem;
+            }
+
+            .nav-button.active {
+                box-shadow: 0 12px 24px rgba(200, 74, 0, 0.35);
+            }
+        }
+
+        /* Utility to hide scrollbars for touch-friendly strips */
+        .no-scrollbar {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <nav class="bg-slate-900/50 py-3 border-b border-slate-700 sticky top-0 z-50 backdrop-blur-sm">
+        <div class="container mx-auto flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 px-4">
+            <!-- Logo -->
+            <a href="https://learn.theunshakableinvestor.com" target="_blank" rel="noopener noreferrer" class="flex-shrink-0">
+                <img src="https://storage.googleapis.com/msgsndr/zQh0YM3EIsWgcjMDTSSC/media/68c95d8f7505d3a75a7fabd2.png" alt="Unshakable Investor Logo" class="h-8 w-auto">
+            </a>
+
+            <!-- Navigation Links (Desktop) -->
+            <div class="hidden sm:flex items-center space-x-4" role="tablist" aria-label="Tool navigation">
+                <button data-view="rehabEstimatorView" aria-controls="rehabEstimatorView" class="nav-button active bg-slate-800 text-white hover:bg-slate-700 px-3 py-2 rounded-md text-sm font-bold uppercase tracking-wider text-center transition-colors" role="tab" aria-selected="true">Rehab Estimator</button>
+                <button data-view="profitAnalysisView" aria-controls="profitAnalysisView" class="nav-button bg-slate-800 text-white hover:bg-slate-700 px-3 py-2 rounded-md text-sm font-bold uppercase tracking-wider text-center transition-colors" role="tab" aria-selected="false">Profit Analysis</button>
+                <button data-view="submitDealView" aria-controls="submitDealView" class="nav-button bg-slate-800 text-white hover:bg-slate-700 px-3 py-2 rounded-md text-sm font-bold uppercase tracking-wider text-center transition-colors" role="tab" aria-selected="false">Submit Deal</button>
+            </div>
+
+            <!-- Navigation Links (Mobile) -->
+            <div class="sm:hidden w-full" role="tablist" aria-label="Tool navigation">
+                <div class="flex flex-col gap-2">
+                    <button data-view="rehabEstimatorView" aria-controls="rehabEstimatorView" class="nav-button active w-full bg-slate-800/80 text-white hover:bg-slate-700 px-4 py-3 rounded-xl text-base font-semibold uppercase tracking-wide text-left transition-colors border border-slate-700 shadow-sm flex items-center justify-between" role="tab" aria-selected="true">
+                        <span class="flex items-center gap-3">
+                            <i data-lucide="construction" class="h-5 w-5 text-amber-400"></i>
+                            <span>Rehab Estimator</span>
+                        </span>
+                        <i data-lucide="chevron-right" class="nav-chevron h-5 w-5 text-slate-300"></i>
+                    </button>
+                    <button data-view="profitAnalysisView" aria-controls="profitAnalysisView" class="nav-button w-full bg-slate-800/80 text-white hover:bg-slate-700 px-4 py-3 rounded-xl text-base font-semibold uppercase tracking-wide text-left transition-colors border border-slate-700 shadow-sm flex items-center justify-between" role="tab" aria-selected="false">
+                        <span class="flex items-center gap-3">
+                            <i data-lucide="trending-up" class="h-5 w-5 text-emerald-400"></i>
+                            <span>Profit Analysis</span>
+                        </span>
+                        <i data-lucide="chevron-right" class="nav-chevron h-5 w-5 text-slate-300"></i>
+                    </button>
+                    <button data-view="submitDealView" aria-controls="submitDealView" class="nav-button w-full bg-slate-800/80 text-white hover:bg-slate-700 px-4 py-3 rounded-xl text-base font-semibold uppercase tracking-wide text-left transition-colors border border-slate-700 shadow-sm flex items-center justify-between" role="tab" aria-selected="false">
+                        <span class="flex items-center gap-3">
+                            <i data-lucide="inbox" class="h-5 w-5 text-sky-400"></i>
+                            <span>Submit Deal</span>
+                        </span>
+                        <i data-lucide="chevron-right" class="nav-chevron h-5 w-5 text-slate-300"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main id="app-container">
+        <!-- Profit Analysis View -->
+        <div id="profitAnalysisView" class="view-container hidden">
+             <div class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
+                <div class="w-full max-w-7xl mx-auto">
+                    <header class="text-center mb-10 pt-8 sm:pt-0">
+                        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-white">
+                            Fix & Flip Deal Analyzer
+                        </h1>
+                        <p class="mt-2 text-lg text-slate-400">
+                            Make decisions with numbers, not emotion. Adjust the sliders to analyze your deal potential.
+                        </p>
+                    </header>
+
+                    <main class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                        <div class="lg:col-span-2 space-y-6">
+                            <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-700">
+                                <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+                                    <i data-lucide="sliders-horizontal" class="mr-3 text-amber-400"></i>
+                                    Deal Inputs
+                                </h2>
+                                <div class="space-y-4 mb-6 border-b border-slate-700 pb-6">
+                                    <div>
+                                        <label for="property_address" class="font-semibold text-white">Property Address</label>
+                                        <input type="text" id="property_address" class="w-full p-2 rounded-md mt-1" placeholder="e.g., 123 Main St, Anytown, USA">
+                                    </div>
+                                    <div>
+                                        <label for="sqft_input" class="font-semibold text-white">Square Footage (SQFT)</label>
+                                        <input type="number" id="sqft_input" class="w-full p-2 rounded-md mt-1" placeholder="e.g., 1500">
+                                    </div>
+                                </div>
+                                <div class="space-y-3 mb-6">
+                                    <div class="flex justify-between items-baseline">
+                                        <label for="arv" class="font-semibold text-white">After-Repair Value (ARV)</label>
+                                        <div class="flex items-center gap-3">
+                                            <span id="arv_per_sqft" class="text-sm text-slate-400 whitespace-nowrap"></span>
+                                            <input type="number" id="arv_input" class="w-32 text-right p-1 rounded-md" value="515000">
+                                        </div>
+                                    </div>
+                                    <input type="range" id="arv_slider" min="50000" max="2000000" step="1" value="515000" class="w-full">
+                                </div>
+                                <div class="space-y-3 mb-6">
+                                    <div class="flex justify-between items-baseline">
+                                        <label for="purchase_price" class="font-semibold text-white">Purchase Price</label>
+                                         <div class="flex items-center gap-3">
+                                            <span id="purchase_price_per_sqft" class="text-sm text-slate-400 whitespace-nowrap"></span>
+                                            <input type="number" id="purchase_price_input" class="w-32 text-right p-1 rounded-md" value="345000">
+                                        </div>
+                                    </div>
+                                    <input type="range" id="purchase_price_slider" min="10000" max="1500000" step="1" value="345000" class="w-full">
+                                </div>
+                                <div class="space-y-3 mb-6">
+                                    <div class="flex justify-between items-baseline">
+                                        <label for="rehab_costs" class="font-semibold text-white">Rehab Costs</label>
+                                        <div class="flex items-center gap-3">
+                                            <span id="rehab_costs_per_sqft" class="text-sm text-slate-400 whitespace-nowrap"></span>
+                                            <input type="number" id="rehab_costs_input" class="w-32 text-right p-1 rounded-md" value="45000">
+                                        </div>
+                                    </div>
+                                    <input type="range" id="rehab_costs_slider" min="0" max="500000" step="1" value="45000" class="w-full">
+                                </div>
+                                 <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <label for="target_profit_input" class="font-semibold text-white flex items-center">
+                                            Min. Target Profit
+                                            <i data-lucide="info" class="w-4 h-4 ml-2 text-slate-400 cursor-pointer" title="Auto-calculated as the greater of $30k or 10% of ARV (max $100k), but you can override it."></i>
+                                        </label>
+                                        <div class="relative">
+                                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
+                                            <input type="number" id="target_profit_input" class="w-32 text-right p-1 rounded-md pl-6" value="40000">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-700">
+                                <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+                                    <i data-lucide="landmark" class="mr-3 text-amber-400"></i>
+                                    Financing Assumptions
+                                </h2>
+                                <div class="space-y-4">
+                                    <div class="flex justify-between items-center">
+                                        <label for="ltv_input" class="font-medium text-slate-300">Loan to Cost (%)</label>
+                                        <input type="number" id="ltv_input" class="w-24 text-right p-1 rounded-md" value="75">
+                                    </div>
+                                     <div class="flex justify-between items-center">
+                                        <label for="interest_rate_input" class="font-medium text-slate-300">Interest Rate (%)</label>
+                                        <input type="number" id="interest_rate_input" class="w-24 text-right p-1 rounded-md" value="12">
+                                    </div>
+                                     <div class="flex justify-between items-center">
+                                        <label for="holding_period_input" class="font-medium text-slate-300">Holding Period (Months)</label>
+                                        <input type="number" id="holding_period_input" class="w-24 text-right p-1 rounded-md" value="6">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-3">
+                            <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-700">
+                                <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+                                   <i data-lucide="bar-chart-2" class="mr-3 text-amber-400"></i>
+                                    Profit Analysis
+                                </h2>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                                    <div id="net_profit_card" class="p-4 rounded-lg border border-slate-700 transition-all duration-300">
+                                        <p class="text-sm font-medium text-slate-400">NET PROFIT</p>
+                                        <p id="net_profit" class="text-4xl font-bold"></p>
+                                    </div>
+                                     <div class="p-4 rounded-lg bg-black/20 border border-slate-700">
+                                        <p class="text-sm font-medium text-slate-400">RETURN ON INVESTMENT (ROI)</p>
+                                        <p id="roi" class="text-4xl font-bold gradient-text"></p>
+                                    </div>
+                                     <div class="p-4 rounded-lg bg-black/20 border border-slate-700">
+                                        <p class="text-sm font-medium text-slate-400">PROFIT MARGIN (% OF ARV)</p>
+                                        <p id="profit_margin" class="text-4xl font-bold gradient-text"></p>
+                                    </div>
+                                    <div class="p-4 rounded-lg bg-black/20 border border-slate-700">
+                                        <div class="flex items-center justify-between">
+                                            <p class="text-sm font-medium text-slate-400">UPFRONT ACQUISITION COST</p>
+                                            <i id="toggle_acquisition_calc" data-lucide="chevron-down" class="w-5 h-5 text-slate-500 cursor-pointer transition-transform"></i>
+                                        </div>
+                                        <p id="acquisition_cost" class="text-2xl font-semibold"></p>
+                                        <div id="acquisition_calc" class="hidden mt-2 text-xs text-slate-400 bg-slate-800 p-2 rounded"></div>
+                                    </div>
+                                    <div class="p-4 rounded-lg bg-black/20 border border-slate-700">
+                                         <div class="flex items-center justify-between">
+                                            <p class="text-sm font-medium text-slate-400">EST. LOAN AMOUNT</p>
+                                            <i id="toggle_loan_calc" data-lucide="chevron-down" class="w-5 h-5 text-slate-500 cursor-pointer transition-transform"></i>
+                                        </div>
+                                        <p id="loan_amount" class="text-2xl font-semibold"></p>
+                                        <div id="loan_calc" class="hidden mt-2 text-xs text-slate-400 bg-slate-800 p-2 rounded"></div>
+                                    </div>
+                                    <div id="cost_basis_card" class="p-4 rounded-lg bg-black/20 border border-slate-700">
+                                        <p class="text-sm font-medium text-slate-400">PURCHASE + REHAB % OF ARV</p>
+                                        <p id="cost_basis_percent" class="text-4xl font-bold"></p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-white mb-3">Deal Breakdown</h3>
+                                    <div class="space-y-2 text-slate-300">
+                                        <div class="flex justify-between p-2 rounded bg-black/20"><span>After-Repair Value (ARV)</span><span id="breakdown_arv" class="font-bold text-white"></span></div>
+                                        <div class="flex justify-between p-2 rounded bg-black/20 text-red-400"><span>(-) Total Project Costs</span><span id="total_project_cost" class="font-semibold"></span></div>
+                                        <div class="ml-4 border-l-2 border-slate-700 pl-4 space-y-2 py-2">
+                                            <div class="flex justify-between text-sm"><span>Purchase Price</span><span id="breakdown_purchase"></span></div>
+                                            <div class="flex justify-between text-sm"><span>Rehab Costs</span><span id="breakdown_rehab"></span></div>
+                                            <div class="flex justify-between text-sm group">
+                                                <span class="flex items-center">Holding Costs</span>
+                                                <span id="breakdown_holding_total" class="font-semibold"></span>
+                                            </div>
+                                            <div class="ml-4 border-l-2 border-slate-600 pl-4 space-y-1">
+                                                <div class="flex justify-between text-xs"><span>Selling Costs (6% of ARV)</span><span id="breakdown_selling"></span></div>
+                                                <div class="flex justify-between text-xs"><span>Financing Costs</span><span id="breakdown_financing"></span></div>
+                                                <div class="flex justify-between text-xs"><span>Closing Costs (5% of Purchase Price)</span><span id="breakdown_closing"></span></div>
+                                            </div>
+                                        </div>
+                                        <div class="flex justify-between p-2 rounded bg-green-500/10 text-green-300 border-t-2 border-green-500/30">
+                                            <span class="font-bold">(=) NET PROFIT</span>
+                                            <span id="breakdown_profit" class="font-bold"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+
+                    <section class="mt-8 bg-slate-900/50 p-6 rounded-2xl border border-slate-700">
+                         <h2 class="text-2xl font-bold text-white mb-2 flex items-center">
+                            <i data-lucide="table" class="mr-3 text-amber-400"></i>
+                            Profit Sensitivity Analysis
+                        </h2>
+                        <p class="text-sm text-slate-400 mb-4">The table below shows how Net Profit changes with different Purchase Prices and Rehab Costs. Green cells meet or exceed your Target Profit.</p>
+                        <div id="profit_table_container" class="rounded-lg">
+                            <table id="profit_table" class="w-full text-sm border-collapse border border-slate-700">
+                            </table>
+                        </div>
+                    </section>
+
+                    <section id="submit_deal_section" class="mt-8 bg-slate-900/50 p-6 rounded-2xl border border-slate-700">
+                        <h2 class="text-2xl font-bold text-white mb-4 flex items-center">
+                            <i data-lucide="mail" class="mr-3 text-amber-400"></i>
+                            Get Your Deal Report
+                        </h2>
+                        <p class="text-sm text-slate-400 mb-4">Enter your email below to send a copy of this deal analysis to your inbox.</p>
+                        <div class="flex flex-col sm:flex-row gap-4 items-center">
+                            <input type="email" id="user_email" placeholder="Enter your email address..." class="flex-grow w-full p-3 rounded-md focus:ring-2 focus:ring-amber-500 focus:outline-none transition">
+                            <button id="submit_deal_btn" class="w-full sm:w-auto bg-gradient-to-r from-orange-600 to-orange-800 hover:from-orange-700 hover:to-orange-900 text-white font-bold py-3 px-6 rounded-md transition-all duration-300 flex items-center justify-center">
+                                <span id="submit_btn_text">Send Me The Report</span>
+                                <span id="submit_btn_spinner" class="hidden animate-spin rounded-full h-5 w-5 border-b-2 border-white"></span>
+                            </button>
+                        </div>
+                        <p id="submit_status" class="text-sm mt-3 text-slate-400 h-4"></p>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rehab Estimator View -->
+        <div id="rehabEstimatorView" class="view-container">
+            <div class="container mx-auto p-4 md:p-8">
+                <header class="text-center mb-12">
+                    <h1 class="text-4xl md:text-5xl font-extrabold uppercase tracking-tighter text-white">Rehab Cost Estimator</h1>
+                    <p class="text-slate-400 mt-2 max-w-2xl mx-auto">A direct, authoritative, and value-driven tool to project your fix-and-flip costs instantly.</p>
+                </header>
+
+                <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Left Side: Inputs & Rehab Items -->
+                    <div class="lg:col-span-2 space-y-8">
+                        
+                        <!-- Property Details Section -->
+                        <section id="property-details" class="bg-[#1E1E1E] p-6 rounded-xl shadow-lg">
+                            <h2 class="text-2xl font-bold uppercase tracking-tighter mb-4 border-b border-slate-700 pb-2">Property Details</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <input type="text" id="address" placeholder="Property Address" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-brand-fire-end">
+                                <div class="relative">
+                                    <input type="text" id="zipcode" placeholder="Property Zip Code" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-brand-fire-end" maxlength="5">
+                                     <p id="metro-display" class="text-xs text-slate-400 mt-1 h-4"></p>
+                                </div>
+                                <input type="number" id="beds" placeholder="# of Beds" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-brand-fire-end" min="0">
+                                <input type="number" id="baths" placeholder="# of Baths" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-brand-fire-end" min="0">
+                                <input type="number" id="sqft" placeholder="Square Footage (SqFt)" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-brand-fire-end" min="0">
+                            </div>
+                        </section>
+
+                        <!-- Rehab Categories Section -->
+                        <section id="rehab-items" class="space-y-6">
+                            <!-- Categories will be dynamically inserted here -->
+                        </section>
+                    </div>
+
+                    <!-- Right Side: Cost Summary -->
+                    <div class="lg:col-span-1 lg:sticky top-24 h-fit">
+                        <aside class="bg-[#1E1E1E] p-6 rounded-xl shadow-lg">
+                            <h2 class="text-2xl font-bold uppercase tracking-tighter mb-6 border-b border-slate-700 pb-2">Cost Summary</h2>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center bg-slate-800 p-4 rounded-lg">
+                                    <span class="text-slate-400">Total Base Rehab Cost</span>
+                                    <span id="total-rehab-cost" class="text-2xl font-bold text-white">$0.00</span>
+                                </div>
+                                <div class="flex justify-between items-center bg-slate-800 p-4 rounded-lg">
+                                    <span class="text-slate-400">Metro Area Adjustment</span>
+                                    <span id="rehab-estimation" class="text-2xl font-bold text-white">$0.00</span>
+                                </div>
+                                <div class="flex justify-between items-center bg-gradient-to-r from-orange-500 to-orange-700 text-white p-4 rounded-lg">
+                                    <span class="font-semibold">Final Estimate (+10%)</span>
+                                    <span id="final-estimation" class="text-3xl font-bold">$0.00</span>
+                                </div>
+                            </div>
+                             <p class="text-xs text-slate-500 mt-6 text-center">Disclaimer: This tool provides a rough estimate for informational purposes only.</p>
+                                <!-- Email Section -->
+                                <div class="mt-6 border-t border-slate-700 pt-4">
+                                    <h3 class="text-lg font-bold uppercase tracking-tighter mb-3 text-center">Get a Detailed Breakdown</h3>
+                                    <div class="space-y-3">
+                                        <input type="email" id="user-email" placeholder="Enter your email address" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                                        <button id="email-budget-btn" class="w-full bg-gradient-to-r from-yellow-600 to-yellow-800 text-white font-bold py-3 px-4 rounded-lg hover:opacity-90 transition-opacity duration-200">
+                                            Email Me The Full Rehab Budget
+                                        </button>
+                                        <p id="email-status" class="text-xs text-center h-4"></p>
+                                    </div>
+                                </div>
+                        </aside>
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        <!-- Submit Deal View -->
+        <div id="submitDealView" class="view-container hidden">
+            <div class="flex flex-col" style="min-height: calc(100vh - 70px);">
+                 <header class="text-center mb-4 pt-4 container mx-auto p-4 md:p-8">
+                    <h1 class="text-4xl md:text-5xl font-extrabold uppercase tracking-tighter text-white">Submit Your Deal</h1>
+                    <p class="text-slate-400 mt-2 max-w-2xl mx-auto">Complete the form below and our team will review your potential fix-and-flip project.</p>
+                </header>
+                <iframe src="https://shy-spike-7b2.notion.site/ebd/28041616c38e80ffb2cfea0c8d6ce778" class="flex-grow" style="width:100%; border:none;"></iframe>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- VIEW SWITCHING LOGIC ---
+            function setupViewSwitcher() {
+                const navButtons = document.querySelectorAll('.nav-button');
+                const views = document.querySelectorAll('.view-container');
+
+                navButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const targetViewId = button.dataset.view;
+                        
+                        if (targetViewId === 'profitAnalysisView') {
+                            // Transfer Rehab Cost
+                            const finalEstimationEl = document.querySelector('#rehabEstimatorView #final-estimation');
+                            if (finalEstimationEl) {
+                                const rehabCostString = finalEstimationEl.textContent;
+                                const rehabCostValue = parseFloat(rehabCostString.replace(/[^0-9.-]+/g, ""));
+                                if (rehabCostValue > 0) {
+                                    const rehabInput = document.querySelector('#profitAnalysisView #rehab_costs_input');
+                                    const rehabSlider = document.querySelector('#profitAnalysisView #rehab_costs_slider');
+                                    if (rehabInput && rehabSlider) {
+                                        rehabInput.value = rehabCostValue;
+                                        rehabSlider.value = rehabCostValue;
+                                        rehabInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                    }
+                                }
+                            }
+                            
+                            // Transfer Property Address
+                            const addressSource = document.querySelector('#rehabEstimatorView #address');
+                            if (addressSource && addressSource.value) {
+                                const addressDest = document.querySelector('#profitAnalysisView #property_address');
+                                if (addressDest) {
+                                    addressDest.value = addressSource.value;
+                                }
+                            }
+
+                            // Transfer Square Footage
+                            const sqftSource = document.querySelector('#rehabEstimatorView #sqft');
+                            if (sqftSource && sqftSource.value) {
+                                const sqftDest = document.querySelector('#profitAnalysisView #sqft_input');
+                                if (sqftDest) {
+                                    sqftDest.value = sqftSource.value;
+                                    // Dispatch event to trigger per/sqft updates
+                                    sqftDest.dispatchEvent(new Event('input', { bubbles: true }));
+                                }
+                            }
+                        }
+
+                        // Hide all views
+                        views.forEach(view => {
+                            view.classList.add('hidden');
+                        });
+
+                        // Show the target view
+                        const targetView = document.getElementById(targetViewId);
+                        if (targetView) {
+                            targetView.classList.remove('hidden');
+                        }
+
+                        // Update active button style and accessibility state
+                        navButtons.forEach(btn => {
+                            const isActive = btn.dataset.view === targetViewId;
+                            btn.classList.toggle('active', isActive);
+                            btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                        });
+                    });
+                });
+            }
+
+
+            // --- PROFIT ANALYZER LOGIC ---
+            function initProfitAnalyzer() {
+                lucide.createIcons();
+                const $ = (selector) => document.getElementById(selector);
+
+                const inputs = {
+                    propertyAddress: $('property_address'), sqft: $('sqft_input'), arv: $('arv_input'), arvSlider: $('arv_slider'),
+                    purchasePrice: $('purchase_price_input'), purchasePriceSlider: $('purchase_price_slider'), rehabCosts: $('rehab_costs_input'),
+                    rehabCostsSlider: $('rehab_costs_slider'), targetProfit: $('target_profit_input'), ltv: $('ltv_input'),
+                    interestRate: $('interest_rate_input'), holdingPeriod: $('holding_period_input'), userEmail: $('user_email'),
+                };
+
+                const ui = {
+                    arvPerSqft: $('arv_per_sqft'), purchasePricePerSqft: $('purchase_price_per_sqft'), rehabCostsPerSqft: $('rehab_costs_per_sqft'),
+                    netProfitCard: $('net_profit_card'), netProfit: $('net_profit'), roi: $('roi'), profitMargin: $('profit_margin'),
+                    acquisitionCost: $('acquisition_cost'), acquisitionCalc: $('acquisition_calc'), toggleAcquisitionCalc: $('toggle_acquisition_calc'),
+                    loanAmount: $('loan_amount'), loanCalc: $('loan_calc'), toggleLoanCalc: $('toggle_loan_calc'), costBasisCard: $('cost_basis_card'),
+                    costBasisPercent: $('cost_basis_percent'), totalProjectCost: $('total_project_cost'), breakdownArv: $('breakdown_arv'),
+                    breakdownPurchase: $('breakdown_purchase'), breakdownRehab: $('breakdown_rehab'), breakdownHoldingTotal: $('breakdown_holding_total'),
+                    breakdownSelling: $('breakdown_selling'), breakdownFinancing: $('breakdown_financing'), breakdownClosing: $('breakdown_closing'),
+                    breakdownProfit: $('breakdown_profit'), profitTable: $('profit_table'), submitDealBtn: $('submit_deal_btn'),
+                    submitBtnText: $('submit_btn_text'), submitBtnSpinner: $('submit_btn_spinner'), submitStatus: $('submit_status'),
+                };
+
+                const formatCurrency = (value, isPerSqFt = false) => {
+                    if (isNaN(value) || !isFinite(value)) return '$0';
+                    const options = { style: 'currency', currency: 'USD', minimumFractionDigits: isPerSqFt ? 2 : 0, maximumFractionDigits: isPerSqFt ? 2 : 0 };
+                    return value.toLocaleString('en-US', options);
+                };
+                
+                function getDealMetrics(arv, purchasePrice, rehabCosts, financingParams, sqft) {
+                    const { ltv, interestRate, holdingPeriod } = financingParams;
+                    const sellingCosts = arv * 0.06;
+                    const closingCosts = purchasePrice * 0.05;
+                    const totalCostBasis = purchasePrice + rehabCosts;
+                    const loanAmount = totalCostBasis * (ltv / 100);
+                    const financingCosts = loanAmount * (interestRate / 100 / 12) * holdingPeriod;
+                    const totalHoldingCosts = sellingCosts + financingCosts + closingCosts;
+                    const totalProjectCost = purchasePrice + rehabCosts + totalHoldingCosts;
+                    const netProfit = arv - totalProjectCost;
+                    const downPayment = totalCostBasis - loanAmount;
+                    const acquisitionCost = closingCosts + downPayment;
+                    const roi = acquisitionCost > 0 ? (netProfit / acquisitionCost) * 100 : Infinity;
+                    const costBasisOfArv = arv > 0 ? (totalCostBasis / arv) * 100 : 0;
+                    const profitMargin = arv > 0 ? (netProfit / arv) * 100 : 0;
+                    const arvPerSqft = sqft > 0 ? arv / sqft : 0;
+                    const purchasePricePerSqft = sqft > 0 ? purchasePrice / sqft : 0;
+                    const rehabPerSqft = sqft > 0 ? rehabCosts / sqft : 0;
+                    return { arv, purchasePrice, rehabCosts, sellingCosts, closingCosts, loanAmount, financingCosts, totalHoldingCosts, totalProjectCost, netProfit, acquisitionCost, roi, downPayment, totalCostBasis, ltv, costBasisOfArv, profitMargin, arvPerSqft, purchasePricePerSqft, rehabPerSqft };
+                }
+
+                function updateUI() {
+                    const sqft = parseFloat(inputs.sqft.value) || 0;
+                    const arv = parseFloat(inputs.arv.value) || 0;
+                    const purchasePrice = parseFloat(inputs.purchasePrice.value) || 0;
+                    const rehabCosts = parseFloat(inputs.rehabCosts.value) || 0;
+                    const targetProfit = parseFloat(inputs.targetProfit.value) || 0;
+                    const financingParams = { ltv: parseFloat(inputs.ltv.value) || 0, interestRate: parseFloat(inputs.interestRate.value) || 0, holdingPeriod: parseFloat(inputs.holdingPeriod.value) || 0 };
+                    const metrics = getDealMetrics(arv, purchasePrice, rehabCosts, financingParams, sqft);
+                    ui.arvPerSqft.textContent = sqft > 0 ? `(${formatCurrency(metrics.arvPerSqft, true)}/sqft)` : '';
+                    ui.purchasePricePerSqft.textContent = sqft > 0 ? `(${formatCurrency(metrics.purchasePricePerSqft, true)}/sqft)` : '';
+                    ui.rehabCostsPerSqft.textContent = sqft > 0 ? `(${formatCurrency(metrics.rehabPerSqft, true)}/sqft)` : '';
+                    ui.netProfit.textContent = formatCurrency(metrics.netProfit);
+                    ui.roi.textContent = isFinite(metrics.roi) ? `${metrics.roi.toFixed(1)}%` : 'N/A';
+                    ui.profitMargin.textContent = isFinite(metrics.profitMargin) ? `${metrics.profitMargin.toFixed(1)}%` : 'N/A';
+                    ui.acquisitionCost.textContent = formatCurrency(metrics.acquisitionCost);
+                    ui.loanAmount.textContent = formatCurrency(metrics.loanAmount);
+                    ui.costBasisPercent.textContent = `${metrics.costBasisOfArv.toFixed(1)}%`;
+                    ui.costBasisPercent.classList.toggle('text-red-400', metrics.costBasisOfArv > 75);
+                    ui.costBasisPercent.classList.toggle('text-green-400', metrics.costBasisOfArv <= 75);
+                    ui.acquisitionCalc.innerHTML = `Down Payment: ${formatCurrency(metrics.downPayment)}<br>+ Closing Costs: ${formatCurrency(metrics.closingCosts)}`;
+                    ui.loanCalc.innerHTML = `(Purchase + Rehab) * LTV<br>(${formatCurrency(metrics.purchasePrice)} + ${formatCurrency(metrics.rehabCosts)}) * ${metrics.ltv}%`;
+                    ui.breakdownArv.textContent = formatCurrency(metrics.arv);
+                    ui.totalProjectCost.textContent = formatCurrency(metrics.totalProjectCost);
+                    ui.breakdownPurchase.textContent = formatCurrency(metrics.purchasePrice);
+                    ui.breakdownRehab.textContent = formatCurrency(metrics.rehabCosts);
+                    ui.breakdownHoldingTotal.textContent = formatCurrency(metrics.totalHoldingCosts);
+                    ui.breakdownSelling.textContent = formatCurrency(metrics.sellingCosts);
+                    ui.breakdownFinancing.textContent = formatCurrency(metrics.financingCosts);
+                    ui.breakdownClosing.textContent = formatCurrency(metrics.closingCosts);
+                    ui.breakdownProfit.textContent = formatCurrency(metrics.netProfit);
+                    ui.netProfitCard.classList.remove('bg-green-500/20', 'border-green-500', 'bg-red-500/20', 'border-red-500');
+                    ui.netProfitCard.classList.add(metrics.netProfit >= targetProfit ? 'bg-green-500/20' : 'bg-red-500/20', metrics.netProfit >= targetProfit ? 'border-green-500' : 'border-red-500');
+                    generateProfitTable(metrics, financingParams, targetProfit, sqft);
+                }
+
+                function generateProfitTable(baseMetrics, financingParams, targetProfit, sqft) {
+                    const basePurchase = baseMetrics.purchasePrice;
+                    const baseRehab = baseMetrics.rehabCosts;
+                    const purchaseIncrement = basePurchase * 0.03;
+                    const rehabIncrement = baseRehab * 0.03 || 1000;
+                    let tableHTML = '<thead><tr><th class="border border-slate-600 font-bold">PP &darr; | Rehab &rarr;</th>';
+                    for (let i = -5; i <= 5; i++) { const rehabVal = baseRehab + (i * rehabIncrement); tableHTML += `<th class="border border-slate-600">${formatCurrency(rehabVal)}</th>`; }
+                    tableHTML += '</tr></thead><tbody>';
+                    for (let j = 0; j < 6; j++) {
+                        const purchaseVal = basePurchase - (j * purchaseIncrement);
+                        tableHTML += `<tr><th class="bg-slate-800 border border-slate-600">${formatCurrency(purchaseVal)}</th>`;
+                        for (let i = -5; i <= 5; i++) {
+                            const rehabVal = baseRehab + (i * rehabIncrement);
+                            const cellMetrics = getDealMetrics(baseMetrics.arv, purchaseVal, rehabVal, financingParams, sqft);
+                            const inRangeClass = cellMetrics.netProfit >= targetProfit ? 'in-range' : '';
+                            const currentDealClass = (i === 0 && j === 0) ? 'current-deal' : '';
+                            tableHTML += `<td class="${inRangeClass} ${currentDealClass} border border-slate-700">${formatCurrency(cellMetrics.netProfit)}</td>`;
+                        }
+                        tableHTML += '</tr>';
+                    }
+                    tableHTML += '</tbody>';
+                    ui.profitTable.innerHTML = tableHTML;
+                }
+
+                function updateTargetProfit() {
+                    const arv = parseFloat(inputs.arv.value) || 0;
+                    const percentageProfit = arv * 0.10;
+                    const calculatedTarget = Math.min(100000, Math.max(30000, percentageProfit));
+                    inputs.targetProfit.value = Math.round(calculatedTarget);
+                }
+                
+                function getProfitTableData(baseMetrics, financingParams, sqft) {
+                    const basePurchase = baseMetrics.purchasePrice; const baseRehab = baseMetrics.rehabCosts; const purchaseIncrement = basePurchase * 0.03; const rehabIncrement = baseRehab * 0.03 || 1000;
+                    const headers = ['Purchase Price \\ Rehab Cost'];
+                    for (let i = -5; i <= 5; i++) { headers.push(formatCurrency(baseRehab + (i * rehabIncrement))); }
+                    const rows = [];
+                    for (let j = 0; j < 6; j++) {
+                        const purchaseVal = basePurchase - (j * purchaseIncrement);
+                        const rowData = { purchasePrice: formatCurrency(purchaseVal), profits: {} };
+                        for (let i = -5; i <= 5; i++) {
+                            const rehabVal = baseRehab + (i * rehabIncrement);
+                            const cellMetrics = getDealMetrics(baseMetrics.arv, purchaseVal, rehabVal, financingParams, sqft);
+                            rowData.profits[headers[i + 1]] = formatCurrency(cellMetrics.netProfit);
+                        }
+                        rows.push(rowData);
+                    }
+                    return { headers, rows };
+                }
+
+                async function sendToWebhook() {
+                    const email = inputs.userEmail.value;
+                    if (!email || !email.includes('@')) { ui.submitStatus.textContent = 'Please enter a valid email address.'; ui.submitStatus.classList.add('text-red-400'); return; }
+                    ui.submitDealBtn.disabled = true; ui.submitBtnText.classList.add('hidden'); ui.submitBtnSpinner.classList.remove('hidden'); ui.submitStatus.textContent = 'Sending...'; ui.submitStatus.classList.remove('text-red-400', 'text-green-400');
+                    const sqft = parseFloat(inputs.sqft.value) || 0; const arv = parseFloat(inputs.arv.value) || 0; const purchasePrice = parseFloat(inputs.purchasePrice.value) || 0; const rehabCosts = parseFloat(inputs.rehabCosts.value) || 0; const targetProfit = parseFloat(inputs.targetProfit.value) || 0;
+                    const financingParams = { ltv: parseFloat(inputs.ltv.value) || 0, interestRate: parseFloat(inputs.interestRate.value) || 0, holdingPeriod: parseFloat(inputs.holdingPeriod.value) || 0, };
+                    const metrics = getDealMetrics(arv, purchasePrice, rehabCosts, financingParams, sqft);
+                    const tableData = getProfitTableData(metrics, financingParams, sqft);
+                    const payload = { email, report: { propertyDetails: { address: inputs.propertyAddress.value || 'N/A', sqft: sqft > 0 ? sqft : 'N/A' }, dealInputs: { arv: formatCurrency(arv), purchasePrice: formatCurrency(purchasePrice), rehabCosts: formatCurrency(rehabCosts), minTargetProfit: formatCurrency(targetProfit), }, financingAssumptions: { ltv: `${financingParams.ltv}%`, interestRate: `${financingParams.interestRate}%`, holdingPeriod: `${financingParams.holdingPeriod} months` }, profitAnalysis: { netProfit: formatCurrency(metrics.netProfit), roi: isFinite(metrics.roi) ? `${metrics.roi.toFixed(1)}%` : 'N/A', profitMargin: isFinite(metrics.profitMargin) ? `${metrics.profitMargin.toFixed(1)}%` : 'N/A', upfrontAcquisitionCost: formatCurrency(metrics.acquisitionCost), estLoanAmount: formatCurrency(metrics.loanAmount), costBasisVsArv: `${metrics.costBasisOfArv.toFixed(1)}%`, arvPerSqft: sqft > 0 ? formatCurrency(metrics.arvPerSqft, true) : 'N/A', purchasePricePerSqft: sqft > 0 ? formatCurrency(metrics.purchasePricePerSqft, true) : 'N/A', rehabPerSqft: sqft > 0 ? formatCurrency(metrics.rehabPerSqft, true) : 'N/A' }, sensitivityAnalysis: tableData, } };
+                    try {
+                        const response = await fetch('https://hook.us2.make.com/toloqfcv3e31we94yhbvugmvq5n6glof', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                        if(response.ok) { ui.submitStatus.textContent = 'Deal report sent successfully!'; ui.submitStatus.classList.add('text-green-400'); } else { throw new Error('Server responded with an error.'); }
+                    } catch (error) { console.error('Webhook submission failed:', error); ui.submitStatus.textContent = 'Submission failed. Please try again.'; ui.submitStatus.classList.add('text-red-400'); } finally { ui.submitDealBtn.disabled = false; ui.submitBtnText.classList.remove('hidden'); ui.submitBtnSpinner.classList.add('hidden'); }
+                }
+
+                function setupListeners() {
+                    Object.values(inputs).forEach(input => { if (input.id !== 'user_email') { input.addEventListener('input', updateUI); } });
+                    inputs.arvSlider.addEventListener('input', () => inputs.arv.value = inputs.arvSlider.value);
+                    inputs.arv.addEventListener('input', () => { inputs.arvSlider.value = inputs.arv.value; updateTargetProfit(); });
+                    inputs.purchasePriceSlider.addEventListener('input', () => inputs.purchasePrice.value = inputs.purchasePriceSlider.value);
+                    inputs.purchasePrice.addEventListener('input', () => inputs.purchasePriceSlider.value = inputs.purchasePrice.value);
+                    inputs.rehabCostsSlider.addEventListener('input', () => inputs.rehabCosts.value = inputs.rehabCostsSlider.value);
+                    inputs.rehabCosts.addEventListener('input', () => inputs.rehabCostsSlider.value = inputs.rehabCosts.value);
+                    ui.toggleAcquisitionCalc.addEventListener('click', () => { ui.acquisitionCalc.classList.toggle('hidden'); ui.toggleAcquisitionCalc.classList.toggle('rotate-180'); });
+                    ui.toggleLoanCalc.addEventListener('click', () => { ui.loanCalc.classList.toggle('hidden'); ui.toggleLoanCalc.classList.toggle('rotate-180'); });
+                    ui.submitDealBtn.addEventListener('click', sendToWebhook);
+                }
+                
+                updateTargetProfit();
+                updateUI();
+                setupListeners();
+            }
+
+            // --- REHAB ESTIMATOR LOGIC ---
+            function initRehabEstimator() {
+                const metroData = [ { metro: "New York-Newark-Jersey City, NY, NJ, PA", multiplier: 1.252, lat: 40.7128, lon: -74.0060 }, { metro: "Los Angeles-Long Beach-Anaheim, CA", multiplier: 1.233, lat: 34.0522, lon: -118.2437 }, { metro: "Chicago-Naperville-Elgin, IL, IN, WI", multiplier: 1.024, lat: 41.8781, lon: -87.6298 }, { metro: "Dallas-Fort Worth-Arlington, TX", multiplier: 1.005, lat: 32.7767, lon: -96.7970 }, { metro: "Houston-The Woodlands-Sugar Land, TX", multiplier: 0.946, lat: 29.7604, lon: -95.3698 }, { metro: "Miami-Fort Lauderdale-Pompano Beach, FL", multiplier: 1.119, lat: 25.7617, lon: -80.1918 }, { metro: "Philadelphia-Camden-Wilmington, PA, NJ, DE, MD", multiplier: 1.037, lat: 39.9526, lon: -75.1652 }, { metro: "Atlanta-Sandy Springs-Alpharetta, GA", multiplier: 0.957, lat: 33.7490, lon: -84.3880 }, { metro: "Washington-Arlington-Alexandria, DC, VA, MD, WV", multiplier: 1.157, lat: 38.9072, lon: -77.0369 }, { metro: "Boston-Cambridge-Newton, MA, NH", multiplier: 1.137, lat: 42.3601, lon: -71.0589 }, { metro: "Phoenix-Mesa-Chandler, AZ", multiplier: 0.999, lat: 33.4484, lon: -112.0740 }, { metro: "San Francisco-Oakland-Berkeley, CA", multiplier: 1.299, lat: 37.7749, lon: -122.4194 }, { metro: "Riverside-San Bernardino-Ontario, CA", multiplier: 1.096, lat: 34.0560, lon: -117.4050 }, { metro: "Detroit-Warren-Dearborn, MI", multiplier: 0.916, lat: 42.3314, lon: -83.0458 }, { metro: "Seattle-Tacoma-Bellevue, WA", multiplier: 1.168, lat: 47.6062, lon: -122.3321 }, { metro: "Minneapolis-St. Paul-Bloomington, MN, WI", multiplier: 1.006, lat: 44.9778, lon: -93.2650 }, { metro: "San Diego-Chula Vista-Carlsbad, CA", multiplier: 1.168, lat: 32.7157, lon: -117.1611 }, { metro: "Tampa-St. Petersburg-Clearwater, FL", multiplier: 1.002, lat: 27.9641, lon: -82.4524 }, { metro: "Denver-Aurora-Lakewood, CO", multiplier: 1.056, lat: 39.7392, lon: -104.9903 }, { metro: "Baltimore-Columbia-Towson, MD", multiplier: 1.066, lat: 39.2904, lon: -76.6122 }, { metro: "St. Louis, MO, IL", multiplier: 0.89, lat: 38.6270, lon: -90.1994 }, { metro: "Orlando-Kissimmee-Sanford, FL", multiplier: 0.993, lat: 28.5383, lon: -81.3792 }, { metro: "Charlotte-Concord-Gastonia, NC, SC", multiplier: 0.948, lat: 35.2271, lon: -80.8431 }, { metro: "San Antonio-New Braunfels, TX", multiplier: 0.916, lat: 29.4241, lon: -98.4936 }, { metro: "Portland-Vancouver-Hillsboro, OR, WA", multiplier: 1.054, lat: 45.5051, lon: -122.6750 }, { metro: "Sacramento-Roseville-Folsom, CA", multiplier: 1.077, lat: 38.5816, lon: -121.4944 }, { metro: "Pittsburgh, PA", multiplier: 0.914, lat: 40.4406, lon: -79.9959 }, { metro: "Austin-Round Rock-Georgetown, TX", multiplier: 1.011, lat: 30.2672, lon: -97.7431 }, { metro: "Las Vegas-Henderson-Paradise, NV", multiplier: 0.996, lat: 36.1699, lon: -115.1398 }, { metro: "Cincinnati, OH, KY, IN", multiplier: 0.914, lat: 39.1031, lon: -84.5120 }, { metro: "Kansas City, MO, KS", multiplier: 0.93, lat: 39.0997, lon: -94.5786 }, { metro: "Columbus, OH", multiplier: 0.929, lat: 39.9612, lon: -82.9988 }, { metro: "Cleveland-Elyria, OH", multiplier: 0.912, lat: 41.4993, lon: -81.6944 }, { metro: "Indianapolis-Carmel-Anderson, IN", multiplier: 0.903, lat: 39.7684, lon: -86.1581 }, { metro: "San Jose-Sunnyvale-Santa Clara, CA", multiplier: 1.303, lat: 37.3382, lon: -121.8863 }, { metro: "Nashville-Davidson--Murfreesboro--Franklin, TN", multiplier: 0.958, lat: 36.1627, lon: -86.7816 }, { metro: "Virginia Beach-Norfolk-Newport News, VA, NC", multiplier: 0.97, lat: 36.8529, lon: -75.9780 }, { metro: "Providence-Warwick, RI, MA", multiplier: 1.033, lat: 41.8240, lon: -71.4128 }, { metro: "Milwaukee-Waukesha, WI", multiplier: 0.948, lat: 43.0389, lon: -87.9065 }, { metro: "Jacksonville, FL", multiplier: 0.985, lat: 30.3322, lon: -81.6557 } ];
+                const rehabItems = [ { id: 'int_paint', category: 'General Interior', name: 'Interior Painting (Walls & Trim)', type: 'sqft', cost: 4.55 }, { id: 'flooring_lvp', category: 'General Interior', name: 'Flooring Installation (LVP)', type: 'sqft', cost: 6.05 }, { id: 'flooring_carpet', category: 'General Interior', name: 'Carpet Installation', type: 'sqft', cost: 5 }, { id: 'hardwood_refinish', category: 'General Interior', name: 'Hardwood Floor Refinishing', type: 'sqft', cost: 6 }, { id: 'baseboard', category: 'General Interior', name: 'Baseboard & Trim Installation', type: 'sqft', cost: 2.5 }, { id: 'deep_clean', category: 'General Interior', name: 'Deep Cleaning', type: 'onetime', cost: 1000 }, { id: 'light_fixtures', category: 'General Interior', name: 'Light Fixture Replacement', type: 'item', cost: 250, label: 'fixtures' }, { id: 'outlets_switches', category: 'General Interior', name: 'Outlets & Switches Replacement', type: 'onetime', cost: 25 }, { id: 'door_hardware', category: 'General Interior', name: 'Door Hardware Replacement', type: 'onetime', cost: 500 }, { id: 'int_door', category: 'General Interior', name: 'Interior Door Replacement', type: 'item', cost: 460, label: 'doors' }, { id: 'popcorn_removal', category: 'General Interior', name: 'Popcorn Ceiling Removal', type: 'onetime', cost: 6900 }, { id: 'attic_insulation', category: 'General Interior', name: 'Attic Insulation (Blown-in)', type: 'onetime', cost: 6000 }, { id: 'ext_paint', category: 'General Exterior', name: 'Exterior Painting', type: 'sqft', cost: 3.75 }, { id: 'landscaping', category: 'General Exterior', name: 'Landscaping Cleanup & Mulching', type: 'onetime', cost: 1650 }, { id: 'entry_door', category: 'General Exterior', name: 'Entry Door Replacement (Steel)', type: 'onetime', cost: 2500 }, { id: 'window_replace', category: 'General Exterior', name: 'Window Replacement (Vinyl)', type: 'item', cost: 600, label: 'windows' }, { id: 'siding_vinyl', category: 'General Exterior', name: 'Siding Replacement (Vinyl)', type: 'sqft', cost: 13.00 }, { id: 'gutters', category: 'General Exterior', name: 'Gutter Installation', type: 'linear_ft', cost: 5, label: 'linear ft' }, { id: 'garage_door', category: 'General Exterior', name: 'Garage Door Replacement', type: 'onetime', cost: 2530 }, { id: 'deck_repair', category: 'General Exterior', name: 'Deck Repair', type: 'onetime', cost: 5800 }, { id: 'deck_add', category: 'General Exterior', name: 'Deck Addition (Wood)', type: 'onetime', cost: 13500 }, { id: 'fence_install', category: 'General Exterior', name: 'Fence Installation (Wood)', type: 'linear_ft', cost: 52, label: 'linear ft' }, { id: 'driveway_seal', category: 'General Exterior', name: 'Driveway Sealing (Asphalt)', type: 'onetime', cost: 1050 }, { id: 'stone_veneer', category: 'General Exterior', name: 'Manufactured Stone Veneer Accent', type: 'onetime', cost: 2200 }, { id: 'hvac', category: 'Major Systems & Utilities', name: 'HVAC System Replacement', type: 'onetime', cost: 10350 }, { id: 'water_heater', category: 'Major Systems & Utilities', name: 'Water Heater Replacement', type: 'onetime', cost: 1500 }, { id: 'roof', category: 'Major Systems & Utilities', name: 'Roof Replacement (Asphalt)', type: 'onetime', cost: 20000 }, { id: 'elec_panel', category: 'Major Systems & Utilities', name: 'Electrical Panel Upgrade', type: 'onetime', cost: 2875 }, { id: 'foundation_repair', category: 'Major Systems & Utilities', name: 'Foundation Repair (Piers)', type: 'onetime', cost: 5000 }, { id: 'pest_control', category: 'Major Systems & Utilities', name: 'Pest Control (General)', type: 'onetime', cost: 460 }, { id: 'termite', category: 'Major Systems & Utilities', name: 'Termite Treatment', type: 'onetime', cost: 2070 }, { id: 'sump_pump', category: 'Major Systems & Utilities', name: 'Sump Pump Installation', type: 'onetime', cost: 1610 }, { id: 'security_sys', category: 'Major Systems & Utilities', name: 'Security System Installation', type: 'onetime', cost: 1500 }, { id: 'smart_thermostat', category: 'Major Systems & Utilities', name: 'Smart Thermostat Installation', type: 'onetime', cost: 430 }, { id: 'garage_opener', category: 'Major Systems & Utilities', name: 'Garage Door Opener Installation', type: 'onetime', cost: 1000 }, { id: 'k_demo_cosmetic', category: 'Kitchen Remodel', name: 'Demolition (Cosmetic)', type: 'onetime', cost: 1500 }, { id: 'k_demo_studs', category: 'Kitchen Remodel', name: 'Demolition to Studs', type: 'onetime', cost: 3500 }, { id: 'k_framing', category: 'Kitchen Remodel', name: 'Structural & Framing (Layout Change)', type: 'onetime', cost: 4500 }, { id: 'k_mep_overhaul', category: 'Kitchen Remodel', name: 'Full MEP Overhaul (New Wiring & Plumbing)', type: 'onetime', cost: 6000 }, { id: 'k_insulation', category: 'Kitchen Remodel', name: 'Insulation & Drywall Installation', type: 'sqft', cost: 3.5 }, { id: 'k_cabinet_paint', category: 'Kitchen Remodel', name: 'Cabinet Painting', type: 'onetime', cost: 2250 }, { id: 'k_cabinets_low', category: 'Kitchen Remodel', name: 'New Cabinets (Low-Grade)', type: 'onetime', cost: 5000 }, { id: 'k_cabinets_mid', category: 'Kitchen Remodel', name: 'New Cabinets (Mid-Grade)', type: 'onetime', cost: 9500 }, { id: 'k_counter_entry', category: 'Kitchen Remodel', name: 'Countertops (Entry-Level Quartz)', type: 'onetime', cost: 3800 }, { id: 'k_counter_mid', category: 'Kitchen Remodel', name: 'Countertops (Mid-Grade Quartz)', type: 'onetime', cost: 5500 }, { id: 'k_appliances', category: 'Kitchen Remodel', name: 'Appliance Package (3-Piece Stainless)', type: 'onetime', cost: 3700 }, { id: 'k_backsplash', category: 'Kitchen Remodel', name: 'Tile Backsplash Installation', type: 'onetime', cost: (35 + 37.5)/2 * 30 }, { id: 'k_sink_faucet', category: 'Kitchen Remodel', name: 'Kitchen Sink & Faucet Replacement', type: 'onetime', cost: 865 }, { id: 'k_disposal', category: 'Kitchen Remodel', name: 'Garbage Disposal Installation', type: 'onetime', cost: 430 }, { id: 'k_mep_updates', category: 'Kitchen Remodel', name: 'MEP Updates (GFCI, valves, etc.)', type: 'onetime', cost: 650 }, { id: 'b_demo_cosmetic', category: 'Bathroom Remodel', name: 'Demolition (Cosmetic)', type: 'onetime', cost: 1800 }, { id: 'b_demo_studs', category: 'Bathroom Remodel', name: 'Demolition to Studs', type: 'onetime', cost: 2500 }, { id: 'b_framing', category: 'Bathroom Remodel', name: 'Structural & Framing (Layout Change)', type: 'onetime', cost: 3000 }, { id: 'b_mep_overhaul', category: 'Bathroom Remodel', name: 'Full MEP Overhaul (New Wiring & Plumbing)', type: 'onetime', cost: 7500 }, { id: 'b_insulation', category: 'Bathroom Remodel', name: 'Insulation & Drywall Installation', type: 'onetime', cost: 3500 }, { id: 'b_reglaze', category: 'Bathroom Remodel', name: 'Bathtub/Shower Reglazing', type: 'onetime', cost: 550 }, { id: 'b_tub_combo', category: 'Bathroom Remodel', name: 'Tub/Shower Combo Replacement', type: 'onetime', cost: 5175 }, { id: 'b_tile', category: 'Bathroom Remodel', name: 'Tile Installation (Floor & Walls)', type: 'onetime', cost: 4500 }, { id: 'b_vanity', category: 'Bathroom Remodel', name: 'Bathroom Vanity & Top Replacement', type: 'onetime', cost: 1380 }, { id: 'b_toilet', category: 'Bathroom Remodel', name: 'Toilet Replacement', type: 'onetime', cost: 520 }, { id: 'b_fixtures', category: 'Bathroom Remodel', name: 'Fixtures, Mirror & Lighting', type: 'onetime', cost: 1500 }, { id: 'b_mep_updates', category: 'Bathroom Remodel', name: 'MEP Updates (GFCI, valves, etc.)', type: 'onetime', cost: 1125 }, ];
+                
+                let currentMetroMultiplier = 1.0;
+                
+                const rehabEstimatorView = document.getElementById('rehabEstimatorView');
+                const inputs = {
+                    sqft: rehabEstimatorView.querySelector('#sqft'), baths: rehabEstimatorView.querySelector('#baths'), zipcode: rehabEstimatorView.querySelector('#zipcode'),
+                    address: rehabEstimatorView.querySelector('#address'), userEmail: rehabEstimatorView.querySelector('#user-email'),
+                };
+                const outputs = {
+                    totalRehabCost: rehabEstimatorView.querySelector('#total-rehab-cost'), rehabEstimation: rehabEstimatorView.querySelector('#rehab-estimation'),
+                    finalEstimation: rehabEstimatorView.querySelector('#final-estimation'), metroDisplay: rehabEstimatorView.querySelector('#metro-display'),
+                    emailStatus: rehabEstimatorView.querySelector('#email-status'),
+                };
+                const rehabItemsContainer = rehabEstimatorView.querySelector('#rehab-items');
+                const emailButton = rehabEstimatorView.querySelector('#email-budget-btn');
+                
+                function formatCurrencySimple(number) {
+                    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0, }).format(Math.round(number));
+                }
+
+                function populateRehabItems() {
+                    if (rehabItemsContainer.childElementCount > 0) return; // Prevent re-population
+                    const categories = [...new Set(rehabItems.map(item => item.category))];
+                    categories.forEach(category => {
+                        const categoryWrapper = document.createElement('div');
+                        categoryWrapper.className = 'bg-[#1E1E1E] p-6 rounded-xl shadow-lg';
+                        let headerHTML = `<h3 class="text-xl font-bold uppercase tracking-tighter mb-4 border-b border-slate-700 pb-2">${category}</h3>`;
+                        if (category === 'Bathroom Remodel') {
+                            headerHTML += `<div class="mb-4"><label for="baths-to-remodel" class="block text-sm font-medium text-slate-400 mb-1">Number of Bathrooms to Remodel:</label><input type="number" id="baths-to-remodel" value="1" min="1" class="w-24 bg-slate-800 border border-slate-700 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-brand-fire-end"></div>`;
+                        }
+                        categoryWrapper.innerHTML = headerHTML;
+                        const itemsGrid = document.createElement('div');
+                        itemsGrid.className = 'grid grid-cols-1 sm:grid-cols-2 gap-4';
+                        rehabItems.filter(item => item.category === category).forEach(item => {
+                            const itemContainer = document.createElement('div');
+                            itemContainer.className = 'flex items-center justify-between bg-slate-800 p-3 rounded-lg';
+                            const checkboxLabelWrapper = document.createElement('div');
+                            checkboxLabelWrapper.className = 'flex items-center space-x-3';
+                            const checkbox = document.createElement('input');
+                            checkbox.type = 'checkbox'; checkbox.id = item.id; checkbox.className = 'h-5 w-5 rounded bg-slate-700 border-slate-600 text-brand-fire-end focus:ring-brand-fire-end';
+                            const label = document.createElement('label');
+                            label.htmlFor = item.id; label.textContent = item.name; label.className = 'text-slate-300';
+                            checkboxLabelWrapper.appendChild(checkbox); checkboxLabelWrapper.appendChild(label); itemContainer.appendChild(checkboxLabelWrapper);
+                            if (item.type === 'item' || item.type === 'linear_ft') {
+                                const quantityInput = document.createElement('input');
+                                quantityInput.type = 'number'; quantityInput.id = `${item.id}-qty`; quantityInput.min = "1"; quantityInput.value = "1";
+                                quantityInput.placeholder = `# of ${item.label}`; quantityInput.className = 'w-24 bg-slate-700 border border-slate-600 rounded-md p-1 text-center focus:outline-none focus:ring-2 focus:ring-brand-fire-end';
+                                quantityInput.disabled = true; itemContainer.appendChild(quantityInput);
+                                checkbox.addEventListener('change', () => { quantityInput.disabled = !checkbox.checked; });
+                            }
+                            itemsGrid.appendChild(itemContainer);
+                        });
+                        categoryWrapper.appendChild(itemsGrid);
+                        rehabItemsContainer.appendChild(categoryWrapper);
+                    });
+                }
+                
+                function getDistance(lat1, lon1, lat2, lon2) { const R = 6371; const dLat = (lat2 - lat1) * Math.PI / 180; const dLon = (lon2 - lon1) * Math.PI / 180; const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2); const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); return R * c; }
+
+                async function handleZipcodeChange() {
+                    const zip = inputs.zipcode.value;
+                    if (zip.length !== 5) { outputs.metroDisplay.textContent = ''; currentMetroMultiplier = 1.0; calculateCosts(); return; }
+                    outputs.metroDisplay.textContent = 'Finding closest metro...';
+                    try {
+                        const response = await fetch(`https://api.zippopotam.us/us/${zip}`); if (!response.ok) throw new Error('Invalid zip code');
+                        const data = await response.json(); const place = data.places[0]; const userLat = parseFloat(place.latitude); const userLon = parseFloat(place.longitude);
+                        let closestMetro = null; let minDistance = Infinity;
+                        metroData.forEach(metro => { const distance = getDistance(userLat, userLon, metro.lat, metro.lon); if (distance < minDistance) { minDistance = distance; closestMetro = metro; } });
+                        if (closestMetro) { outputs.metroDisplay.textContent = `Metro: ${closestMetro.metro.split(',')[0]}`; currentMetroMultiplier = closestMetro.multiplier; } else { outputs.metroDisplay.textContent = 'Could not find metro.'; currentMetroMultiplier = 1.0; }
+                    } catch (error) { console.error("Zip code lookup failed:", error); outputs.metroDisplay.textContent = 'Invalid zip code.'; currentMetroMultiplier = 1.0; }
+                    calculateCosts();
+                }
+
+                function getCalculationDetails() {
+                    const sqft = parseFloat(inputs.sqft.value) || 0;
+                    const bathsToRemodel = parseFloat(rehabEstimatorView.querySelector('#baths-to-remodel')?.value) || 1;
+                    const itemizedList = []; let totalRehabCost = 0;
+                    rehabItems.forEach(item => {
+                        const checkbox = rehabEstimatorView.querySelector(`#${item.id}`);
+                        if (!checkbox || !checkbox.checked) return;
+                        let itemBaseCost = 0;
+                        switch (item.type) {
+                            case 'onetime': itemBaseCost = item.cost; break;
+                            case 'sqft': itemBaseCost = item.cost * sqft; break;
+                            case 'item': case 'linear_ft': const qty = parseFloat(rehabEstimatorView.querySelector(`#${item.id}-qty`).value) || 1; itemBaseCost = item.cost * qty; break;
+                        }
+                        let finalItemBaseCost = itemBaseCost; let itemName = item.name;
+                        if (item.category === 'Bathroom Remodel') { finalItemBaseCost *= bathsToRemodel; if (bathsToRemodel > 1) { itemName += ` (x${bathsToRemodel})`; } }
+                        totalRehabCost += finalItemBaseCost; const adjustedItemCost = finalItemBaseCost * currentMetroMultiplier;
+                        itemizedList.push({ name: itemName, cost: adjustedItemCost });
+                    });
+                    const rehabEstimation = totalRehabCost * currentMetroMultiplier; const finalEstimation = rehabEstimation * 1.10;
+                    return { itemizedList, totalRehabCost, rehabEstimation, finalEstimation };
+                }
+
+                function calculateCosts() {
+                    const { totalRehabCost, rehabEstimation, finalEstimation } = getCalculationDetails();
+                    outputs.totalRehabCost.textContent = formatCurrencySimple(totalRehabCost);
+                    outputs.rehabEstimation.textContent = formatCurrencySimple(rehabEstimation);
+                    outputs.finalEstimation.textContent = formatCurrencySimple(finalEstimation);
+                }
+
+                async function sendBudgetToWebhook() {
+                    const email = inputs.userEmail.value; const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!email || !emailRegex.test(email)) { outputs.emailStatus.textContent = 'Please enter a valid email.'; outputs.emailStatus.classList.add('text-red-500'); inputs.userEmail.focus(); setTimeout(() => outputs.emailStatus.textContent = '', 3000); return; }
+                    emailButton.disabled = true; emailButton.textContent = 'Generating...'; outputs.emailStatus.textContent = ''; outputs.emailStatus.classList.remove('text-red-500', 'text-yellow-500', 'text-green-500');
+                    const { itemizedList, totalRehabCost, rehabEstimation, finalEstimation } = getCalculationDetails();
+                    if (itemizedList.length === 0) { outputs.emailStatus.textContent = 'Please select at least one rehab item.'; outputs.emailStatus.classList.add('text-yellow-500'); emailButton.disabled = false; emailButton.textContent = 'Email Me The Full Rehab Budget'; setTimeout(() => outputs.emailStatus.textContent = '', 3000); return; }
+                    const propertyAddress = inputs.address.value || 'N/A'; const metroAreaText = outputs.metroDisplay.textContent || 'N/A';
+                    const budgetHtml = `<div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px;"><h1 style="color: #C84A00;">Rehab Budget Estimate</h1><p><strong>Property Address:</strong> ${propertyAddress}</p><p><strong>Closest Metro Area:</strong> ${metroAreaText.replace('Metro: ','')}</p><hr><h2 style="color: #C84A00;">Itemized Costs (Metro Adjusted)</h2><table style="width: 100%; border-collapse: collapse;"><thead><tr><th style="border-bottom: 2px solid #ddd; padding: 8px; text-align: left; background-color: #f9f9f9;">Item</th><th style="border-bottom: 2px solid #ddd; padding: 8px; text-align: right; background-color: #f9f9f9;">Estimated Cost</th></tr></thead><tbody>${itemizedList.map(item => `<tr><td style="border-bottom: 1px solid #eee; padding: 8px;">${item.name}</td><td style="border-bottom: 1px solid #eee; padding: 8px; text-align: right;">${formatCurrencySimple(item.cost)}</td></tr>`).join('')}</tbody></table><hr style="margin-top: 20px;"><h2 style="color: #C84A00;">Summary</h2><table style="width: 100%; border-collapse: collapse;"><tr><td style="padding: 8px; text-align: right;"><strong>Total Base Rehab Cost:</strong></td><td style="padding: 8px; text-align: right; width: 35%;">${formatCurrencySimple(totalRehabCost)}</td></tr><tr><td style="padding: 8px; text-align: right;"><strong>Metro Area Adjusted Cost:</strong></td><td style="padding: 8px; text-align: right;">${formatCurrencySimple(rehabEstimation)}</td></tr><tr style="font-size: 1.2em; background-color: #f9f9f9;"><td style="padding: 10px; text-align: right;"><strong>Final Estimate (+10% Contingency):</strong></td><td style="padding: 10px; text-align: right;"><strong>${formatCurrencySimple(finalEstimation)}</strong></td></tr></table></div>`;
+                    const webhookUrl = 'https://hook.us2.make.com/6r3eplmy3xwvg7vn7r19s377yfwyss33';
+                    const payload = { email: email, address: propertyAddress, budgetHtml: budgetHtml };
+                    try {
+                        const response = await fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                        if (response.ok) { emailButton.textContent = 'Email Sent!'; outputs.emailStatus.textContent = 'Success! Check your inbox.'; outputs.emailStatus.classList.add('text-green-500'); } else { throw new Error(`Webhook failed with status: ${response.status}`); }
+                    } catch (error) { console.error('Webhook error:', error); emailButton.textContent = 'Email Me The Full Rehab Budget'; outputs.emailStatus.textContent = 'An error occurred. Please try again.'; outputs.emailStatus.classList.add('text-red-500');
+                    } finally { setTimeout(() => { emailButton.disabled = false; emailButton.textContent = 'Email Me The Full Rehab Budget'; outputs.emailStatus.textContent = ''; }, 5000); }
+                }
+                
+                populateRehabItems();
+                const mainFormArea = rehabEstimatorView.querySelector('.lg\\:col-span-2');
+                mainFormArea.addEventListener('input', (event) => { if (event.target.id !== 'zipcode') { calculateCosts(); } });
+                inputs.zipcode.addEventListener('blur', handleZipcodeChange);
+                emailButton.addEventListener('click', sendBudgetToWebhook);
+            }
+
+            // --- INITIALIZE ALL ---
+            setupViewSwitcher();
+            initProfitAnalyzer();
+            initRehabEstimator();
+        });
+    </script>
+</body>
+</html>
+
