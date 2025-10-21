@@ -732,8 +732,9 @@
             function initRehabEstimator() {
                 const metroData = [ { metro: "New York-Newark-Jersey City, NY, NJ, PA", multiplier: 1.252, lat: 40.7128, lon: -74.0060 }, { metro: "Los Angeles-Long Beach-Anaheim, CA", multiplier: 1.233, lat: 34.0522, lon: -118.2437 }, { metro: "Chicago-Naperville-Elgin, IL, IN, WI", multiplier: 1.024, lat: 41.8781, lon: -87.6298 }, { metro: "Dallas-Fort Worth-Arlington, TX", multiplier: 1.005, lat: 32.7767, lon: -96.7970 }, { metro: "Houston-The Woodlands-Sugar Land, TX", multiplier: 0.946, lat: 29.7604, lon: -95.3698 }, { metro: "Miami-Fort Lauderdale-Pompano Beach, FL", multiplier: 1.119, lat: 25.7617, lon: -80.1918 }, { metro: "Philadelphia-Camden-Wilmington, PA, NJ, DE, MD", multiplier: 1.037, lat: 39.9526, lon: -75.1652 }, { metro: "Atlanta-Sandy Springs-Alpharetta, GA", multiplier: 0.957, lat: 33.7490, lon: -84.3880 }, { metro: "Washington-Arlington-Alexandria, DC, VA, MD, WV", multiplier: 1.157, lat: 38.9072, lon: -77.0369 }, { metro: "Boston-Cambridge-Newton, MA, NH", multiplier: 1.137, lat: 42.3601, lon: -71.0589 }, { metro: "Phoenix-Mesa-Chandler, AZ", multiplier: 0.999, lat: 33.4484, lon: -112.0740 }, { metro: "San Francisco-Oakland-Berkeley, CA", multiplier: 1.299, lat: 37.7749, lon: -122.4194 }, { metro: "Riverside-San Bernardino-Ontario, CA", multiplier: 1.096, lat: 34.0560, lon: -117.4050 }, { metro: "Detroit-Warren-Dearborn, MI", multiplier: 0.916, lat: 42.3314, lon: -83.0458 }, { metro: "Seattle-Tacoma-Bellevue, WA", multiplier: 1.168, lat: 47.6062, lon: -122.3321 }, { metro: "Minneapolis-St. Paul-Bloomington, MN, WI", multiplier: 1.006, lat: 44.9778, lon: -93.2650 }, { metro: "San Diego-Chula Vista-Carlsbad, CA", multiplier: 1.168, lat: 32.7157, lon: -117.1611 }, { metro: "Tampa-St. Petersburg-Clearwater, FL", multiplier: 1.002, lat: 27.9641, lon: -82.4524 }, { metro: "Denver-Aurora-Lakewood, CO", multiplier: 1.056, lat: 39.7392, lon: -104.9903 }, { metro: "Baltimore-Columbia-Towson, MD", multiplier: 1.066, lat: 39.2904, lon: -76.6122 }, { metro: "St. Louis, MO, IL", multiplier: 0.89, lat: 38.6270, lon: -90.1994 }, { metro: "Orlando-Kissimmee-Sanford, FL", multiplier: 0.993, lat: 28.5383, lon: -81.3792 }, { metro: "Charlotte-Concord-Gastonia, NC, SC", multiplier: 0.948, lat: 35.2271, lon: -80.8431 }, { metro: "San Antonio-New Braunfels, TX", multiplier: 0.916, lat: 29.4241, lon: -98.4936 }, { metro: "Portland-Vancouver-Hillsboro, OR, WA", multiplier: 1.054, lat: 45.5051, lon: -122.6750 }, { metro: "Sacramento-Roseville-Folsom, CA", multiplier: 1.077, lat: 38.5816, lon: -121.4944 }, { metro: "Pittsburgh, PA", multiplier: 0.914, lat: 40.4406, lon: -79.9959 }, { metro: "Austin-Round Rock-Georgetown, TX", multiplier: 1.011, lat: 30.2672, lon: -97.7431 }, { metro: "Las Vegas-Henderson-Paradise, NV", multiplier: 0.996, lat: 36.1699, lon: -115.1398 }, { metro: "Cincinnati, OH, KY, IN", multiplier: 0.914, lat: 39.1031, lon: -84.5120 }, { metro: "Kansas City, MO, KS", multiplier: 0.93, lat: 39.0997, lon: -94.5786 }, { metro: "Columbus, OH", multiplier: 0.929, lat: 39.9612, lon: -82.9988 }, { metro: "Cleveland-Elyria, OH", multiplier: 0.912, lat: 41.4993, lon: -81.6944 }, { metro: "Indianapolis-Carmel-Anderson, IN", multiplier: 0.903, lat: 39.7684, lon: -86.1581 }, { metro: "San Jose-Sunnyvale-Santa Clara, CA", multiplier: 1.303, lat: 37.3382, lon: -121.8863 }, { metro: "Nashville-Davidson--Murfreesboro--Franklin, TN", multiplier: 0.958, lat: 36.1627, lon: -86.7816 }, { metro: "Virginia Beach-Norfolk-Newport News, VA, NC", multiplier: 0.97, lat: 36.8529, lon: -75.9780 }, { metro: "Providence-Warwick, RI, MA", multiplier: 1.033, lat: 41.8240, lon: -71.4128 }, { metro: "Milwaukee-Waukesha, WI", multiplier: 0.948, lat: 43.0389, lon: -87.9065 }, { metro: "Jacksonville, FL", multiplier: 0.985, lat: 30.3322, lon: -81.6557 } ];
                 const rehabItems = [ { id: 'int_paint', category: 'General Interior', name: 'Interior Painting (Walls & Trim)', type: 'sqft', cost: 4.55 }, { id: 'flooring_lvp', category: 'General Interior', name: 'Flooring Installation (LVP)', type: 'sqft', cost: 6.05 }, { id: 'flooring_carpet', category: 'General Interior', name: 'Carpet Installation', type: 'sqft', cost: 5 }, { id: 'hardwood_refinish', category: 'General Interior', name: 'Hardwood Floor Refinishing', type: 'sqft', cost: 6 }, { id: 'baseboard', category: 'General Interior', name: 'Baseboard & Trim Installation', type: 'sqft', cost: 2.5 }, { id: 'deep_clean', category: 'General Interior', name: 'Deep Cleaning', type: 'onetime', cost: 1000 }, { id: 'light_fixtures', category: 'General Interior', name: 'Light Fixture Replacement', type: 'item', cost: 250, label: 'fixtures' }, { id: 'outlets_switches', category: 'General Interior', name: 'Outlets & Switches Replacement', type: 'onetime', cost: 25 }, { id: 'door_hardware', category: 'General Interior', name: 'Door Hardware Replacement', type: 'onetime', cost: 500 }, { id: 'int_door', category: 'General Interior', name: 'Interior Door Replacement', type: 'item', cost: 460, label: 'doors' }, { id: 'popcorn_removal', category: 'General Interior', name: 'Popcorn Ceiling Removal', type: 'onetime', cost: 6900 }, { id: 'attic_insulation', category: 'General Interior', name: 'Attic Insulation (Blown-in)', type: 'onetime', cost: 6000 }, { id: 'ext_paint', category: 'General Exterior', name: 'Exterior Painting', type: 'sqft', cost: 3.75 }, { id: 'landscaping', category: 'General Exterior', name: 'Landscaping Cleanup & Mulching', type: 'onetime', cost: 1650 }, { id: 'entry_door', category: 'General Exterior', name: 'Entry Door Replacement (Steel)', type: 'onetime', cost: 2500 }, { id: 'window_replace', category: 'General Exterior', name: 'Window Replacement (Vinyl)', type: 'item', cost: 600, label: 'windows' }, { id: 'siding_vinyl', category: 'General Exterior', name: 'Siding Replacement (Vinyl)', type: 'sqft', cost: 13.00 }, { id: 'gutters', category: 'General Exterior', name: 'Gutter Installation', type: 'linear_ft', cost: 5, label: 'linear ft' }, { id: 'garage_door', category: 'General Exterior', name: 'Garage Door Replacement', type: 'onetime', cost: 2530 }, { id: 'deck_repair', category: 'General Exterior', name: 'Deck Repair', type: 'onetime', cost: 5800 }, { id: 'deck_add', category: 'General Exterior', name: 'Deck Addition (Wood)', type: 'onetime', cost: 13500 }, { id: 'fence_install', category: 'General Exterior', name: 'Fence Installation (Wood)', type: 'linear_ft', cost: 52, label: 'linear ft' }, { id: 'driveway_seal', category: 'General Exterior', name: 'Driveway Sealing (Asphalt)', type: 'onetime', cost: 1050 }, { id: 'stone_veneer', category: 'General Exterior', name: 'Manufactured Stone Veneer Accent', type: 'onetime', cost: 2200 }, { id: 'hvac', category: 'Major Systems & Utilities', name: 'HVAC System Replacement', type: 'onetime', cost: 10350 }, { id: 'water_heater', category: 'Major Systems & Utilities', name: 'Water Heater Replacement', type: 'onetime', cost: 1500 }, { id: 'roof', category: 'Major Systems & Utilities', name: 'Roof Replacement (Asphalt)', type: 'onetime', cost: 20000 }, { id: 'elec_panel', category: 'Major Systems & Utilities', name: 'Electrical Panel Upgrade', type: 'onetime', cost: 2875 }, { id: 'foundation_repair', category: 'Major Systems & Utilities', name: 'Foundation Repair (Piers)', type: 'onetime', cost: 5000 }, { id: 'pest_control', category: 'Major Systems & Utilities', name: 'Pest Control (General)', type: 'onetime', cost: 460 }, { id: 'termite', category: 'Major Systems & Utilities', name: 'Termite Treatment', type: 'onetime', cost: 2070 }, { id: 'sump_pump', category: 'Major Systems & Utilities', name: 'Sump Pump Installation', type: 'onetime', cost: 1610 }, { id: 'security_sys', category: 'Major Systems & Utilities', name: 'Security System Installation', type: 'onetime', cost: 1500 }, { id: 'smart_thermostat', category: 'Major Systems & Utilities', name: 'Smart Thermostat Installation', type: 'onetime', cost: 430 }, { id: 'garage_opener', category: 'Major Systems & Utilities', name: 'Garage Door Opener Installation', type: 'onetime', cost: 1000 }, { id: 'k_demo_cosmetic', category: 'Kitchen Remodel', name: 'Demolition (Cosmetic)', type: 'onetime', cost: 1500 }, { id: 'k_demo_studs', category: 'Kitchen Remodel', name: 'Demolition to Studs', type: 'onetime', cost: 3500 }, { id: 'k_framing', category: 'Kitchen Remodel', name: 'Structural & Framing (Layout Change)', type: 'onetime', cost: 4500 }, { id: 'k_mep_overhaul', category: 'Kitchen Remodel', name: 'Full MEP Overhaul (New Wiring & Plumbing)', type: 'onetime', cost: 6000 }, { id: 'k_insulation', category: 'Kitchen Remodel', name: 'Insulation & Drywall Installation', type: 'sqft', cost: 3.5 }, { id: 'k_cabinet_paint', category: 'Kitchen Remodel', name: 'Cabinet Painting', type: 'onetime', cost: 2250 }, { id: 'k_cabinets_low', category: 'Kitchen Remodel', name: 'New Cabinets (Low-Grade)', type: 'onetime', cost: 5000 }, { id: 'k_cabinets_mid', category: 'Kitchen Remodel', name: 'New Cabinets (Mid-Grade)', type: 'onetime', cost: 9500 }, { id: 'k_counter_entry', category: 'Kitchen Remodel', name: 'Countertops (Entry-Level Quartz)', type: 'onetime', cost: 3800 }, { id: 'k_counter_mid', category: 'Kitchen Remodel', name: 'Countertops (Mid-Grade Quartz)', type: 'onetime', cost: 5500 }, { id: 'k_appliances', category: 'Kitchen Remodel', name: 'Appliance Package (3-Piece Stainless)', type: 'onetime', cost: 3700 }, { id: 'k_backsplash', category: 'Kitchen Remodel', name: 'Tile Backsplash Installation', type: 'onetime', cost: (35 + 37.5)/2 * 30 }, { id: 'k_sink_faucet', category: 'Kitchen Remodel', name: 'Kitchen Sink & Faucet Replacement', type: 'onetime', cost: 865 }, { id: 'k_disposal', category: 'Kitchen Remodel', name: 'Garbage Disposal Installation', type: 'onetime', cost: 430 }, { id: 'k_mep_updates', category: 'Kitchen Remodel', name: 'MEP Updates (GFCI, valves, etc.)', type: 'onetime', cost: 650 }, { id: 'b_demo_cosmetic', category: 'Bathroom Remodel', name: 'Demolition (Cosmetic)', type: 'onetime', cost: 1800 }, { id: 'b_demo_studs', category: 'Bathroom Remodel', name: 'Demolition to Studs', type: 'onetime', cost: 2500 }, { id: 'b_framing', category: 'Bathroom Remodel', name: 'Structural & Framing (Layout Change)', type: 'onetime', cost: 3000 }, { id: 'b_mep_overhaul', category: 'Bathroom Remodel', name: 'Full MEP Overhaul (New Wiring & Plumbing)', type: 'onetime', cost: 7500 }, { id: 'b_insulation', category: 'Bathroom Remodel', name: 'Insulation & Drywall Installation', type: 'onetime', cost: 3500 }, { id: 'b_reglaze', category: 'Bathroom Remodel', name: 'Bathtub/Shower Reglazing', type: 'onetime', cost: 550 }, { id: 'b_tub_combo', category: 'Bathroom Remodel', name: 'Tub/Shower Combo Replacement', type: 'onetime', cost: 5175 }, { id: 'b_tile', category: 'Bathroom Remodel', name: 'Tile Installation (Floor & Walls)', type: 'onetime', cost: 4500 }, { id: 'b_vanity', category: 'Bathroom Remodel', name: 'Bathroom Vanity & Top Replacement', type: 'onetime', cost: 1380 }, { id: 'b_toilet', category: 'Bathroom Remodel', name: 'Toilet Replacement', type: 'onetime', cost: 520 }, { id: 'b_fixtures', category: 'Bathroom Remodel', name: 'Fixtures, Mirror & Lighting', type: 'onetime', cost: 1500 }, { id: 'b_mep_updates', category: 'Bathroom Remodel', name: 'MEP Updates (GFCI, valves, etc.)', type: 'onetime', cost: 1125 }, ];
-                
+
                 let currentMetroMultiplier = 1.0;
+                const customItemsByCategory = {}; // Store custom items per category
                 
                 const rehabEstimatorView = document.getElementById('rehabEstimatorView');
                 const inputs = {
@@ -767,24 +768,131 @@
                         itemsGrid.className = 'grid grid-cols-1 sm:grid-cols-2 gap-4';
                         rehabItems.filter(item => item.category === category).forEach(item => {
                             const itemContainer = document.createElement('div');
-                            itemContainer.className = 'flex items-center justify-between bg-slate-800 p-3 rounded-lg';
+                            itemContainer.className = 'flex flex-col bg-slate-800 p-3 rounded-lg space-y-2';
+
+                            const topRow = document.createElement('div');
+                            topRow.className = 'flex items-center justify-between';
+
                             const checkboxLabelWrapper = document.createElement('div');
                             checkboxLabelWrapper.className = 'flex items-center space-x-3';
                             const checkbox = document.createElement('input');
                             checkbox.type = 'checkbox'; checkbox.id = item.id; checkbox.className = 'h-5 w-5 rounded bg-slate-700 border-slate-600 text-brand-fire-end focus:ring-brand-fire-end';
                             const label = document.createElement('label');
                             label.htmlFor = item.id; label.textContent = item.name; label.className = 'text-slate-300';
-                            checkboxLabelWrapper.appendChild(checkbox); checkboxLabelWrapper.appendChild(label); itemContainer.appendChild(checkboxLabelWrapper);
+                            checkboxLabelWrapper.appendChild(checkbox); checkboxLabelWrapper.appendChild(label); topRow.appendChild(checkboxLabelWrapper);
+
                             if (item.type === 'item' || item.type === 'linear_ft') {
                                 const quantityInput = document.createElement('input');
                                 quantityInput.type = 'number'; quantityInput.id = `${item.id}-qty`; quantityInput.min = "1"; quantityInput.value = "1";
                                 quantityInput.placeholder = `# of ${item.label}`; quantityInput.className = 'w-24 bg-slate-700 border border-slate-600 rounded-md p-1 text-center focus:outline-none focus:ring-2 focus:ring-brand-fire-end';
-                                quantityInput.disabled = true; itemContainer.appendChild(quantityInput);
+                                quantityInput.disabled = true; topRow.appendChild(quantityInput);
                                 checkbox.addEventListener('change', () => { quantityInput.disabled = !checkbox.checked; });
                             }
+
+                            itemContainer.appendChild(topRow);
+
+                            // Add sqft input for per-sqft items
+                            if (item.type === 'sqft') {
+                                const sqftRow = document.createElement('div');
+                                sqftRow.className = 'flex items-center space-x-2 ml-8';
+                                const sqftLabel = document.createElement('label');
+                                sqftLabel.textContent = 'Sq Ft:';
+                                sqftLabel.className = 'text-xs text-slate-400';
+                                const sqftInput = document.createElement('input');
+                                sqftInput.type = 'number';
+                                sqftInput.id = `${item.id}-sqft`;
+                                sqftInput.min = '0';
+                                sqftInput.placeholder = 'Square feet';
+                                sqftInput.className = 'w-28 bg-slate-700 border border-slate-600 rounded-md p-1 text-sm text-center focus:outline-none focus:ring-2 focus:ring-brand-fire-end';
+                                sqftInput.disabled = true;
+                                sqftRow.appendChild(sqftLabel);
+                                sqftRow.appendChild(sqftInput);
+                                itemContainer.appendChild(sqftRow);
+
+                                // Enable/disable sqft input based on checkbox
+                                checkbox.addEventListener('change', () => {
+                                    sqftInput.disabled = !checkbox.checked;
+                                    if (checkbox.checked && !sqftInput.value) {
+                                        const houseSqft = parseFloat(inputs.sqft.value) || 0;
+                                        sqftInput.value = houseSqft;
+                                    }
+                                });
+
+                                // Update sqft input when house sqft changes
+                                inputs.sqft.addEventListener('input', () => {
+                                    if (checkbox.checked) {
+                                        const houseSqft = parseFloat(inputs.sqft.value) || 0;
+                                        if (!sqftInput.value || sqftInput.value == 0) {
+                                            sqftInput.value = houseSqft;
+                                        }
+                                    }
+                                });
+                            }
+
                             itemsGrid.appendChild(itemContainer);
                         });
                         categoryWrapper.appendChild(itemsGrid);
+
+                        // Add custom items section
+                        const customItemsSection = document.createElement('div');
+                        customItemsSection.className = 'mt-6 border-t border-slate-700 pt-4';
+                        customItemsSection.innerHTML = `
+                            <h4 class="text-sm font-semibold text-slate-400 mb-3 uppercase tracking-wider">Add Custom Item</h4>
+                            <div class="flex flex-col sm:flex-row gap-3 mb-3">
+                                <input type="text" id="custom-desc-${category.replace(/\s+/g, '-')}" placeholder="Item description" class="flex-1 bg-slate-800 border border-slate-700 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                                <input type="number" id="custom-cost-${category.replace(/\s+/g, '-')}" placeholder="Cost ($)" min="0" class="w-32 bg-slate-800 border border-slate-700 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                                <button id="add-custom-${category.replace(/\s+/g, '-')}" class="bg-gradient-to-r from-yellow-600 to-yellow-800 text-white font-semibold py-2 px-4 rounded-lg hover:opacity-90 transition-opacity text-sm whitespace-nowrap">
+                                    Add Item
+                                </button>
+                            </div>
+                            <div id="custom-items-list-${category.replace(/\s+/g, '-')}" class="space-y-2"></div>
+                        `;
+                        categoryWrapper.appendChild(customItemsSection);
+
+                        // Initialize custom items array for this category
+                        if (!customItemsByCategory[category]) {
+                            customItemsByCategory[category] = [];
+                        }
+
+                        // Add event listener for add button
+                        const addButton = customItemsSection.querySelector(`#add-custom-${category.replace(/\s+/g, '-')}`);
+                        const descInput = customItemsSection.querySelector(`#custom-desc-${category.replace(/\s+/g, '-')}`);
+                        const costInput = customItemsSection.querySelector(`#custom-cost-${category.replace(/\s+/g, '-')}`);
+                        const customItemsList = customItemsSection.querySelector(`#custom-items-list-${category.replace(/\s+/g, '-')}`);
+
+                        addButton.addEventListener('click', () => {
+                            const description = descInput.value.trim();
+                            const cost = parseFloat(costInput.value);
+
+                            if (!description || !cost || cost <= 0) {
+                                alert('Please enter a valid description and cost amount.');
+                                return;
+                            }
+
+                            const customItemId = `custom-${Date.now()}`;
+                            customItemsByCategory[category].push({ id: customItemId, description, cost });
+
+                            // Create custom item element
+                            const customItemEl = document.createElement('div');
+                            customItemEl.className = 'flex items-center justify-between bg-slate-900 p-2 rounded-lg';
+                            customItemEl.id = customItemId;
+                            customItemEl.innerHTML = `
+                                <span class="text-slate-300 text-sm">${description}</span>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-yellow-400 font-semibold text-sm">$${cost.toLocaleString()}</span>
+                                    <button class="text-red-400 hover:text-red-300 text-sm font-semibold" onclick="this.closest('[id^=\\'custom-\\']').remove(); customItemsByCategory['${category}'] = customItemsByCategory['${category}'].filter(item => item.id !== '${customItemId}'); calculateCosts();">Remove</button>
+                                </div>
+                            `;
+                            customItemsList.appendChild(customItemEl);
+
+                            // Clear inputs
+                            descInput.value = '';
+                            costInput.value = '';
+
+                            // Recalculate costs
+                            calculateCosts();
+                        });
+
                         rehabItemsContainer.appendChild(categoryWrapper);
                     });
                 }
@@ -809,20 +917,51 @@
                     const sqft = parseFloat(inputs.sqft.value) || 0;
                     const bathsToRemodel = parseFloat(rehabEstimatorView.querySelector('#baths-to-remodel')?.value) || 1;
                     const itemizedList = []; let totalRehabCost = 0;
+
+                    // Calculate standard rehab items
                     rehabItems.forEach(item => {
                         const checkbox = rehabEstimatorView.querySelector(`#${item.id}`);
                         if (!checkbox || !checkbox.checked) return;
                         let itemBaseCost = 0;
                         switch (item.type) {
-                            case 'onetime': itemBaseCost = item.cost; break;
-                            case 'sqft': itemBaseCost = item.cost * sqft; break;
-                            case 'item': case 'linear_ft': const qty = parseFloat(rehabEstimatorView.querySelector(`#${item.id}-qty`).value) || 1; itemBaseCost = item.cost * qty; break;
+                            case 'onetime':
+                                itemBaseCost = item.cost;
+                                break;
+                            case 'sqft':
+                                // Use custom sqft input if available, otherwise use house sqft
+                                const sqftInput = rehabEstimatorView.querySelector(`#${item.id}-sqft`);
+                                const itemSqft = sqftInput ? (parseFloat(sqftInput.value) || 0) : sqft;
+                                itemBaseCost = item.cost * itemSqft;
+                                break;
+                            case 'item':
+                            case 'linear_ft':
+                                const qty = parseFloat(rehabEstimatorView.querySelector(`#${item.id}-qty`).value) || 1;
+                                itemBaseCost = item.cost * qty;
+                                break;
                         }
                         let finalItemBaseCost = itemBaseCost; let itemName = item.name;
                         if (item.category === 'Bathroom Remodel') { finalItemBaseCost *= bathsToRemodel; if (bathsToRemodel > 1) { itemName += ` (x${bathsToRemodel})`; } }
                         totalRehabCost += finalItemBaseCost; const adjustedItemCost = finalItemBaseCost * currentMetroMultiplier;
                         itemizedList.push({ name: itemName, cost: adjustedItemCost });
                     });
+
+                    // Add custom items to calculations
+                    Object.keys(customItemsByCategory).forEach(category => {
+                        customItemsByCategory[category].forEach(customItem => {
+                            const customCost = customItem.cost;
+                            let finalCustomCost = customCost;
+
+                            // Apply bathroom multiplier if in bathroom category
+                            if (category === 'Bathroom Remodel') {
+                                finalCustomCost *= bathsToRemodel;
+                            }
+
+                            totalRehabCost += finalCustomCost;
+                            const adjustedCustomCost = finalCustomCost * currentMetroMultiplier;
+                            itemizedList.push({ name: `${customItem.description} (Custom)`, cost: adjustedCustomCost });
+                        });
+                    });
+
                     const rehabEstimation = totalRehabCost * currentMetroMultiplier; const finalEstimation = rehabEstimation * 1.10;
                     return { itemizedList, totalRehabCost, rehabEstimation, finalEstimation };
                 }
