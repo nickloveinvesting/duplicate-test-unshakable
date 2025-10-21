@@ -756,6 +756,8 @@
                 function populateRehabItems() {
                     if (rehabItemsContainer.childElementCount > 0) return; // Prevent re-population
                     const categories = [...new Set(rehabItems.map(item => item.category))];
+                    const sqftInputs = []; // Track all sqft inputs for batch updates
+
                     categories.forEach(category => {
                         const categoryWrapper = document.createElement('div');
                         categoryWrapper.className = 'bg-[#1E1E1E] p-6 rounded-xl shadow-lg';
@@ -809,22 +811,15 @@
                                 sqftRow.appendChild(sqftInput);
                                 itemContainer.appendChild(sqftRow);
 
+                                // Store reference for batch updates
+                                sqftInputs.push({ checkbox, sqftInput });
+
                                 // Enable/disable sqft input based on checkbox
                                 checkbox.addEventListener('change', () => {
                                     sqftInput.disabled = !checkbox.checked;
                                     if (checkbox.checked && !sqftInput.value) {
                                         const houseSqft = parseFloat(inputs.sqft.value) || 0;
                                         sqftInput.value = houseSqft;
-                                    }
-                                });
-
-                                // Update sqft input when house sqft changes
-                                inputs.sqft.addEventListener('input', () => {
-                                    if (checkbox.checked) {
-                                        const houseSqft = parseFloat(inputs.sqft.value) || 0;
-                                        if (!sqftInput.value || sqftInput.value == 0) {
-                                            sqftInput.value = houseSqft;
-                                        }
                                     }
                                 });
                             }
@@ -876,13 +871,31 @@
                             const customItemEl = document.createElement('div');
                             customItemEl.className = 'flex items-center justify-between bg-slate-900 p-2 rounded-lg';
                             customItemEl.id = customItemId;
-                            customItemEl.innerHTML = `
-                                <span class="text-slate-300 text-sm">${description}</span>
-                                <div class="flex items-center space-x-2">
-                                    <span class="text-yellow-400 font-semibold text-sm">$${cost.toLocaleString()}</span>
-                                    <button class="text-red-400 hover:text-red-300 text-sm font-semibold" onclick="this.closest('[id^=\\'custom-\\']').remove(); customItemsByCategory['${category}'] = customItemsByCategory['${category}'].filter(item => item.id !== '${customItemId}'); calculateCosts();">Remove</button>
-                                </div>
-                            `;
+
+                            const itemText = document.createElement('span');
+                            itemText.className = 'text-slate-300 text-sm';
+                            itemText.textContent = description;
+
+                            const itemActions = document.createElement('div');
+                            itemActions.className = 'flex items-center space-x-2';
+
+                            const costText = document.createElement('span');
+                            costText.className = 'text-yellow-400 font-semibold text-sm';
+                            costText.textContent = `$${cost.toLocaleString()}`;
+
+                            const removeBtn = document.createElement('button');
+                            removeBtn.className = 'text-red-400 hover:text-red-300 text-sm font-semibold';
+                            removeBtn.textContent = 'Remove';
+                            removeBtn.addEventListener('click', () => {
+                                customItemEl.remove();
+                                customItemsByCategory[category] = customItemsByCategory[category].filter(item => item.id !== customItemId);
+                                calculateCosts();
+                            });
+
+                            itemActions.appendChild(costText);
+                            itemActions.appendChild(removeBtn);
+                            customItemEl.appendChild(itemText);
+                            customItemEl.appendChild(itemActions);
                             customItemsList.appendChild(customItemEl);
 
                             // Clear inputs
@@ -894,6 +907,16 @@
                         });
 
                         rehabItemsContainer.appendChild(categoryWrapper);
+                    });
+
+                    // Add single listener to update all sqft inputs when house sqft changes
+                    inputs.sqft.addEventListener('input', () => {
+                        const houseSqft = parseFloat(inputs.sqft.value) || 0;
+                        sqftInputs.forEach(({ checkbox, sqftInput }) => {
+                            if (checkbox.checked && (!sqftInput.value || sqftInput.value == 0)) {
+                                sqftInput.value = houseSqft;
+                            }
+                        });
                     });
                 }
                 
